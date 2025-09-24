@@ -1,31 +1,32 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
-    ports:
-      - "8080:80"
-    volumes:
-      - ./src:/var/www/html
-    depends_on:
-      - db
-    environment:
-      DB_HOST: db
-      DB_USER: utilisateur
-      DB_PASSWORD: motdepasse
-      DB_NAME: nom_de_la_base
+  rhel8:
+    image: registry.access.redhat.com/ubi8/ubi:latest
+    container_name: rhel8
+    command: /sbin/init
+    privileged: true
+    networks:
+      - stagiaires_net
 
-  db:
-    image: mariadb:10.11
+  mariadb:
+    image: mariadb:10.6
+    container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: nom_de_la_base
-      MYSQL_USER: utilisateur
+      MYSQL_USER: stagiaire
       MYSQL_PASSWORD: motdepasse
+      MYSQL_DATABASE: stagiaire_db
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      - stagiaires_net
     ports:
       - "3306:3306"
 
 volumes:
   mariadb_data:
+
+networks:
+  stagiaires_net:
+    driver: bridge
