@@ -1,17 +1,27 @@
 version: '3.8'
 
 services:
-  rhel8_apache_mariadb:
-    image: registry.access.redhat.com/ubi8/ubi:latest
-    container_name: rhel8_apache_mariadb
-    command: /sbin/init
-    privileged: true
+  web:
+    image: php:8.2-apache
+    container_name: lamp_web
     volumes:
       - ./www:/var/www/html
-      - ./setup_apache_mariadb.sh:/tmp/setup_apache_mariadb.sh
     ports:
-      - "80:80"       # Port HTTP pour Apache
-      - "3306:3306"   # Port pour MariaDB
+      - "80:80"
+    networks:
+      - stagiaires_net
+
+  db:
+    image: mariadb:11
+    container_name: lamp_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lamp_db
+      MYSQL_USER: lamp_user
+      MYSQL_PASSWORD: lamp_pass
+    ports:
+      - "3306:3306"
     networks:
       - stagiaires_net
 
